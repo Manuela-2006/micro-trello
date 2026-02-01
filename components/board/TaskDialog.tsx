@@ -4,10 +4,8 @@ import { useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-
-import { ColumnId, Priority, Task } from "@/types";
-import { taskFormSchema, TaskFormValues } from "@/lib/validations";
-
+import type { ColumnId, Priority, Task } from "@/types";
+import { taskFormSchema, type TaskFormValues } from "@/lib/validations";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -24,7 +22,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription as ShadcnFormDescription,
+  FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -39,25 +37,23 @@ import {
 type Props = {
   open: boolean;
   onOpenChange: (v: boolean) => void;
-
   mode: "create" | "edit";
-  columnId: ColumnId; // columna destino al crear
-  task?: Task; // si mode=edit
-
+  columnId: ColumnId;
+  task?: Task;
   onSubmitTask: (task: Task) => void;
 };
 
-function priorityLabel(p: Priority) {
+function priorityLabel(p: Priority): string {
   if (p === "high") return "High";
   if (p === "medium") return "Medium";
   return "Low";
 }
 
-function tagsTextFromArray(tags: string[]) {
+function tagsTextFromArray(tags: string[]): string {
   return tags.join(", ");
 }
 
-function parseTags(text?: string) {
+function parseTags(text?: string): string[] {
   if (!text) return [];
   return text
     .split(",")
@@ -65,15 +61,14 @@ function parseTags(text?: string) {
     .filter(Boolean);
 }
 
-function dateToISO(dateStr?: string) {
-  // dateStr esperado: "YYYY-MM-DD"
+function dateToISO(dateStr?: string): string | undefined {
   if (!dateStr) return undefined;
   const d = new Date(dateStr + "T00:00:00");
   if (Number.isNaN(d.getTime())) return undefined;
   return d.toISOString();
 }
 
-function isoToDateInput(iso?: string) {
+function isoToDateInput(iso?: string): string {
   if (!iso) return "";
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return "";
@@ -103,10 +98,8 @@ export function TaskDialog({
     },
   });
 
-  // Rellenar valores en modo edición
   useEffect(() => {
     if (mode !== "edit" || !task) return;
-
     form.reset({
       title: task.title,
       description: task.description ?? "",
@@ -117,7 +110,6 @@ export function TaskDialog({
     });
   }, [mode, task, form]);
 
-  // Reset en crear al abrir
   useEffect(() => {
     if (!open) return;
     if (mode === "create") {
@@ -140,7 +132,7 @@ export function TaskDialog({
       const newTask: Task = {
         id: uuidv4(),
         title: values.title.trim(),
-        description: values.description?.trim() ? values.description.trim() : undefined,
+        description: values.description?.trim() || undefined,
         priority: values.priority,
         tags,
         estimationMin: values.estimationMin,
@@ -148,7 +140,6 @@ export function TaskDialog({
         dueAtISO: dateToISO(values.dueDate),
         status: columnId,
       };
-
       onSubmitTask(newTask);
       onOpenChange(false);
       return;
@@ -158,14 +149,12 @@ export function TaskDialog({
       const updated: Task = {
         ...task,
         title: values.title.trim(),
-        description: values.description?.trim() ? values.description.trim() : undefined,
+        description: values.description?.trim() || undefined,
         priority: values.priority,
         tags,
         estimationMin: values.estimationMin,
         dueAtISO: dateToISO(values.dueDate),
-        // status NO se edita aquí (lo hará el drag & drop)
       };
-
       onSubmitTask(updated);
       onOpenChange(false);
     }
@@ -179,10 +168,10 @@ export function TaskDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent aria-label={title}>
+      <DialogContent aria-describedby="task-dialog-description">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{desc}</DialogDescription>
+          <DialogDescription id="task-dialog-description">{desc}</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
@@ -194,7 +183,11 @@ export function TaskDialog({
                 <FormItem>
                   <FormLabel>Título</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder="Ej: Revisar compliance Q2" autoFocus />
+                    <Input 
+                      {...field} 
+                      placeholder="Ej: Revisar compliance Q2" 
+                      autoFocus 
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -208,7 +201,7 @@ export function TaskDialog({
                 <FormItem>
                   <FormLabel>Descripción</FormLabel>
                   <FormControl>
-                    <Textarea {...field} placeholder="Opcional..." />
+                    <Textarea {...field} placeholder="Opcional..." rows={3} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -250,8 +243,11 @@ export function TaskDialog({
                     <FormControl>
                       <Input
                         type="number"
-                        value={field.value}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
+                        value={field.value || ""}
+                        onChange={(e) => {
+                          const val = e.target.value === "" ? 0 : parseInt(e.target.value);
+                          field.onChange(val);
+                        }}
                         min={1}
                       />
                     </FormControl>
@@ -270,7 +266,7 @@ export function TaskDialog({
                   <FormControl>
                     <Input {...field} placeholder="Ej: compliance, urgent, quarterly" />
                   </FormControl>
-                  <ShadcnFormDescription>Separadas por comas.</ShadcnFormDescription>
+                  <FormDescription>Separadas por comas.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
