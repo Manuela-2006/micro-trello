@@ -1,7 +1,7 @@
 // src/lib/transfer.ts
 
 import type { BoardState, Task, AuditEvent } from "@/types";
-import { BoardStateSchema } from "@/lib/validation";
+import { BoardStateSchema } from "@/lib/validations";
 import { v4 as uuidv4 } from "uuid";
 
 const EXPORT_FILENAME = "micro-trello-board.json";
