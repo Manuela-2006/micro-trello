@@ -15,6 +15,10 @@ type Props = {
   onCreate: () => void;
   onEdit: (task: Task) => void;
   onDelete: (task: Task) => void;
+
+  // ✅ FASE 10
+  godMode: boolean;
+  onEvaluate?: (taskId: string) => void;
 };
 
 export function Column({
@@ -26,6 +30,8 @@ export function Column({
   onCreate,
   onEdit,
   onDelete,
+  godMode,
+  onEvaluate,
 }: Props) {
   const ids = visibleIds ?? state.columns[columnId];
   const { setNodeRef, isOver } = useDroppable({ id: columnId });
@@ -71,6 +77,8 @@ export function Column({
                 dragDisabled={dragDisabled}
                 onEdit={onEdit}
                 onDelete={onDelete}
+                godMode={godMode}
+                onEvaluate={onEvaluate}
               />
             ))
           )}

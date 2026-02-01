@@ -1,19 +1,17 @@
 "use client";
 
 import * as React from "react";
-
 import type { BoardState } from "@/types";
 import { loadState, saveState } from "@/lib/storage";
 import { parseQuery, buildFilteredState } from "@/lib/query";
-
 import { Board } from "@/components/board/Board";
 import { AuditTable } from "@/components/audit/AuditTable";
-
+import { GodModePanel } from "@/components/god/GodModePanel";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-
+import { Switch } from "@/components/ui/switch";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,7 +21,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-
 import { exportBoardState, importBoardStateFromFile } from "@/lib/transfer";
 
 const STORAGE_DEBOUNCE_MS = 250;
@@ -37,25 +34,21 @@ function debounce<T extends (...args: any[]) => void>(fn: T, ms: number) {
 }
 
 export function AppShell() {
-  // Hooks siempre arriba, siempre en el mismo orden
   const [state, setState] = React.useState<BoardState | null>(null);
   const [tab, setTab] = React.useState<"board" | "audit">("board");
   const [searchText, setSearchText] = React.useState("");
   const fileRef = React.useRef<HTMLInputElement | null>(null);
 
-  // AlertDialog state
   const [importOpen, setImportOpen] = React.useState(false);
   const [importTitle, setImportTitle] = React.useState("");
   const [importMessage, setImportMessage] = React.useState("");
   const [importDetails, setImportDetails] = React.useState<string | null>(null);
 
-  // cargar estado al montar (solo una vez)
   React.useEffect(() => {
     const s = loadState();
     setState(s);
   }, []);
 
-  // autosave con debounce (cuando ya hay state)
   const debouncedSave = React.useMemo(
     () =>
       debounce((s: BoardState) => {
@@ -74,6 +67,7 @@ export function AppShell() {
     () => (state ? buildFilteredState(state, q) : null),
     [state, q]
   );
+
   const isFiltering = searchText.trim().length > 0;
 
   async function handleImportFile(file: File) {
@@ -81,16 +75,12 @@ export function AppShell() {
       const next = await importBoardStateFromFile(file);
       setState(next);
       setTab("board");
-      // opcional: limpiar búsqueda si estaba filtrando
-      // setSearchText("");
-
       setImportTitle("Importación correcta ✅");
       setImportMessage("El tablero se ha importado y validado correctamente.");
       setImportDetails(null);
       setImportOpen(true);
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Error desconocido al importar.";
-
       setImportTitle("No se pudo importar ❌");
       setImportMessage("El archivo JSON no es válido o no cumple el esquema.");
       setImportDetails(msg);
@@ -100,7 +90,10 @@ export function AppShell() {
     }
   }
 
-  // No hagas return antes de hooks: ya están todos arriba
+  function handleToggleGodMode(checked: boolean) {
+    setState((prev) => (prev ? { ...prev, godMode: checked } : prev));
+  }
+
   if (!state) {
     return (
       <main className="p-8">
@@ -132,6 +125,15 @@ export function AppShell() {
               placeholder='Buscar... ej: "cliente" tag:compliance p:high due:week est:<60'
               aria-label="Búsqueda avanzada"
             />
+          </div>
+
+          <div className="flex items-center gap-2 rounded-md border px-3 py-2">
+            <Switch
+              checked={state.godMode}
+              onCheckedChange={handleToggleGodMode}
+              aria-label="Activar modo Dios"
+            />
+            <span className="text-sm">Modo Dios</span>
           </div>
 
           <Button
@@ -208,6 +210,13 @@ export function AppShell() {
         </TabsList>
 
         <TabsContent value="board" className="mt-4">
+          {/* ✅ FASE 10: Panel resumen cuando Modo Dios está activo */}
+          {state.godMode && (
+            <div className="mb-6">
+              <GodModePanel state={state} />
+            </div>
+          )}
+
           <Board
             state={state}
             setState={setState}
@@ -221,7 +230,6 @@ export function AppShell() {
         </TabsContent>
       </Tabs>
 
-      {/* AlertDialog Import result */}
       <AlertDialog open={importOpen} onOpenChange={setImportOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -229,7 +237,6 @@ export function AppShell() {
             <AlertDialogDescription asChild>
               <div>
                 <p>{importMessage}</p>
-
                 {importDetails && (
                   <pre className="mt-3 max-h-64 overflow-auto rounded bg-muted p-3 text-xs whitespace-pre-wrap">
                     {importDetails}
@@ -238,7 +245,6 @@ export function AppShell() {
               </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
-
           <AlertDialogFooter>
             <AlertDialogAction>Cerrar</AlertDialogAction>
           </AlertDialogFooter>

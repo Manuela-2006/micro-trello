@@ -5,6 +5,7 @@ import type { BoardState, ColumnId, Task } from "@/types";
 import { Column } from "@/components/board/Column";
 import { TaskDialog } from "@/components/board/TaskDialog";
 import { DeleteTaskDialog } from "@/components/board/DeleteTaskDialog";
+import { EvaluateTaskDialog } from "@/components/board/EvaluateTaskDialog";
 import { addAuditForTaskChange } from "@/lib/audit";
 
 import {
@@ -37,6 +38,9 @@ export function Board({ state, setState, visibleColumns, dragDisabled }: Props) 
   const [dialogColumn, setDialogColumn] = useState<ColumnId>("todo");
   const [dialogTask, setDialogTask] = useState<Task | null>(null);
   const [deleteTask, setDeleteTask] = useState<Task | null>(null);
+  
+  // ✅ FASE 10: Estado para evaluar tareas
+  const [evaluateTask, setEvaluateTask] = useState<Task | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
@@ -70,7 +74,6 @@ export function Board({ state, setState, visibleColumns, dragDisabled }: Props) 
         [task.status]: [task.id, ...state.columns[task.status]],
       },
     };
-
     const next = addAuditForTaskChange({
       state: nextBase,
       action: "CREATE",
@@ -78,7 +81,6 @@ export function Board({ state, setState, visibleColumns, dragDisabled }: Props) 
       before: undefined,
       after: task,
     });
-
     setState(next);
     setDialogOpen(false);
     setDialogTask(null);
@@ -87,12 +89,10 @@ export function Board({ state, setState, visibleColumns, dragDisabled }: Props) 
   function handleUpdate(task: Task) {
     const prev = state.tasks[task.id];
     if (!prev) return;
-
     const nextBase: BoardState = {
       ...state,
       tasks: { ...state.tasks, [task.id]: task },
     };
-
     const next = addAuditForTaskChange({
       state: nextBase,
       action: "UPDATE",
@@ -100,7 +100,6 @@ export function Board({ state, setState, visibleColumns, dragDisabled }: Props) 
       before: prev,
       after: task,
     });
-
     setState(next);
     setDialogOpen(false);
     setDialogTask(null);
@@ -109,9 +108,7 @@ export function Board({ state, setState, visibleColumns, dragDisabled }: Props) 
   function handleDelete(taskId: string) {
     const prev = state.tasks[taskId];
     if (!prev) return;
-
     const { [taskId]: _removed, ...rest } = state.tasks;
-
     const nextBase: BoardState = {
       ...state,
       tasks: rest,
@@ -120,7 +117,6 @@ export function Board({ state, setState, visibleColumns, dragDisabled }: Props) 
         [prev.status]: state.columns[prev.status].filter((id) => id !== taskId),
       },
     };
-
     const next = addAuditForTaskChange({
       state: nextBase,
       action: "DELETE",
@@ -128,19 +124,51 @@ export function Board({ state, setState, visibleColumns, dragDisabled }: Props) 
       before: prev,
       after: undefined,
     });
+    setState(next);
+  }
+
+  // ✅ FASE 10: Handler para evaluar tareas
+  function handleEvaluate(
+    taskId: string,
+    evaluation: {
+      rubricScore: number;
+      rubricComment: string;
+      javiNotes: string;
+    }
+  ) {
+    const prev = state.tasks[taskId];
+    if (!prev) return;
+
+    const updated: Task = {
+      ...prev,
+      rubricScore: evaluation.rubricScore,
+      rubricComment: evaluation.rubricComment || undefined,
+      javiNotes: evaluation.javiNotes || undefined,
+    };
+
+    const nextBase: BoardState = {
+      ...state,
+      tasks: { ...state.tasks, [taskId]: updated },
+    };
+
+    const next = addAuditForTaskChange({
+      state: nextBase,
+      action: "UPDATE",
+      taskId,
+      before: prev,
+      after: updated,
+    });
 
     setState(next);
   }
 
   function handleDragEnd(event: DragEndEvent) {
     if (dragDisabled) return;
-
     const { active, over } = event;
     if (!over) return;
 
     const activeId = String(active.id);
     const overId = String(over.id);
-
     if (activeId === overId) return;
 
     const fromCol = findColumnForTask(activeId);
@@ -156,19 +184,15 @@ export function Board({ state, setState, visibleColumns, dragDisabled }: Props) 
 
     const fromIds = state.columns[fromCol];
     const toIds = state.columns[toCol];
-
     const activeIndex = fromIds.indexOf(activeId);
     if (activeIndex === -1) return;
 
     // Reordenar dentro de la misma columna
     if (fromCol === toCol) {
-      if (isColumnId(overId)) return; // drop en zona vacía: no cambia nada
-
+      if (isColumnId(overId)) return;
       const overIndex = toIds.indexOf(overId);
       if (overIndex === -1) return;
-
       const reordered = arrayMove(toIds, activeIndex, overIndex);
-
       setState({
         ...state,
         columns: { ...state.columns, [toCol]: reordered },
@@ -181,7 +205,6 @@ export function Board({ state, setState, visibleColumns, dragDisabled }: Props) 
     if (!prevTask) return;
 
     const nextFrom = fromIds.filter((id) => id !== activeId);
-
     let insertIndex = toIds.length;
     if (!isColumnId(overId)) {
       const overIndex = toIds.indexOf(overId);
@@ -195,7 +218,6 @@ export function Board({ state, setState, visibleColumns, dragDisabled }: Props) 
     ];
 
     const updatedTask: Task = { ...prevTask, status: toCol };
-
     let nextBase: BoardState = {
       ...state,
       tasks: { ...state.tasks, [activeId]: updatedTask },
@@ -241,6 +263,11 @@ export function Board({ state, setState, visibleColumns, dragDisabled }: Props) 
                 setDialogOpen(true);
               }}
               onDelete={(task) => setDeleteTask(task)}
+              godMode={state.godMode}
+              onEvaluate={(taskId) => {
+                const task = state.tasks[taskId];
+                if (task) setEvaluateTask(task);
+              }}
             />
           ))}
         </section>
@@ -270,6 +297,16 @@ export function Board({ state, setState, visibleColumns, dragDisabled }: Props) 
           setDeleteTask(null);
           handleDelete(id);
         }}
+      />
+
+      {/* ✅ FASE 10: Dialog de evaluación */}
+      <EvaluateTaskDialog
+        open={Boolean(evaluateTask)}
+        onOpenChange={(open) => {
+          if (!open) setEvaluateTask(null);
+        }}
+        task={evaluateTask}
+        onSubmit={handleEvaluate}
       />
     </>
   );
