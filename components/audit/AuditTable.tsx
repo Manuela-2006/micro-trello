@@ -107,7 +107,6 @@ const ACTIONS: (AuditAction | "ALL")[] = [
   "UPDATE",
   "DELETE",
   "MOVE",
-  "IMPORT_FIX",
   "IMPORT",
   "EXPORT",
 ];
