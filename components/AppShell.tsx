@@ -117,116 +117,122 @@ export function AppShell() {
   const total = todo + doing + done;
 
   return (
-    <main className="p-8 space-y-6">
-      <header className="space-y-2">
-        <h1 className="text-3xl font-semibold">Micro Trello Kanban</h1>
-        <p className="text-sm text-muted-foreground">
-          Tareas: {total} - Todo: {todo} - Doing: {doing} - Done: {done}
-        </p>
-
-        <div className="flex items-center gap-3">
-          <div className="flex-1">
-            <Input
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-              placeholder='Buscar... ej: "cliente" tag:compliance p:high due:week est:<60'
-              aria-label="Búsqueda avanzada"
-            />
+    <main className="min-h-screen">
+      <div className="mx-auto max-w-6xl p-8 space-y-6">
+        <header className="space-y-4 rounded-2xl border bg-card/80 p-5 shadow-sm backdrop-blur">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h1 className="text-3xl font-semibold tracking-tight">Micro Trello Kanban</h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Tareas: {total} - Todo: {todo} - Doing: {doing} - Done: {done}
+              </p>
+            </div>
+            <div className="flex items-center gap-2 rounded-full border bg-background/80 px-3 py-2">
+              <Switch
+                checked={state.godMode}
+                onCheckedChange={handleToggleGodMode}
+                aria-label="Activar modo evaluación"
+              />
+              <span className="text-sm">Modo Dios</span>
+            </div>
           </div>
 
-          <div className="flex items-center gap-2 rounded-md border px-3 py-2">
-            <Switch
-              checked={state.godMode}
-              onCheckedChange={handleToggleGodMode}
-              aria-label="Activar modo evaluación"
-            />
-            <span className="text-sm">Modo Dios</span>
-          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex-1 min-w-[240px]">
+              <Input
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                placeholder='Buscar... ej: "cliente" tag:compliance p:high due:week est:<60'
+                aria-label="Búsqueda avanzada"
+              />
+            </div>
 
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => {
-              exportBoardState(state);
-              setState((prev) =>
-                prev
-                  ? appendAudit(
-                      prev,
-                      createAuditEvent({
-                        action: "EXPORT",
-                        taskId: uuidv4(),
-                        diff: {},
-                      })
-                    )
-                  : prev
-              );
-            }}
-            aria-label="Exportar tablero a JSON"
-          >
-            Exportar
-          </Button>
-
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => fileRef.current?.click()}
-            aria-label="Importar tablero desde JSON"
-          >
-            Importar
-          </Button>
-
-          <input
-            ref={fileRef}
-            type="file"
-            accept=".json,application/json"
-            className="hidden"
-            onChange={(e) => {
-              const f = e.target.files?.[0];
-              if (f) handleImportFile(f);
-            }}
-          />
-
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button type="button" variant="outline" aria-label="Guía de teclado">
-                Guía de teclado
+            <div className="flex flex-wrap items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  exportBoardState(state);
+                  setState((prev) =>
+                    prev
+                      ? appendAudit(
+                          prev,
+                          createAuditEvent({
+                            action: "EXPORT",
+                            taskId: uuidv4(),
+                            diff: {},
+                          })
+                        )
+                      : prev
+                  );
+                }}
+                aria-label="Exportar tablero a JSON"
+              >
+                Exportar
               </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-96">
-              <div className="space-y-2 text-sm">
-                <p className="font-medium">Guía rápida de teclado</p>
-                <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
-                  <li>
-                    Crear tarea: <span className="font-mono">Tab</span> hasta el botón{" "}
-                    <span className="font-mono">+</span> y pulsa{" "}
-                    <span className="font-mono">Enter</span>
-                  </li>
-                  <li>
-                    Editar tarea: <span className="font-mono">Tab</span> hasta{" "}
-                    <span className="font-mono">Editar</span> y pulsa{" "}
-                    <span className="font-mono">Enter</span>
-                  </li>
-                  <li>
-                    Borrar tarea: <span className="font-mono">Tab</span> hasta{" "}
-                    <span className="font-mono">Borrar</span> y pulsa{" "}
-                    <span className="font-mono">Enter</span>
-                  </li>
-                  <li>
-                    Mover tarea: enfoca el{" "}
-                    <span className="font-mono">handle ::</span>, pulsa{" "}
-                    <span className="font-mono">Espacio</span> para levantar,{" "}
-                    <span className="font-mono">↑/↓</span> para mover,{" "}
-                    <span className="font-mono">Espacio</span> para soltar
-                  </li>
-                  <li>
-                    Cerrar diálogos: <span className="font-mono">Esc</span>
-                  </li>
-                </ul>
-              </div>
-            </PopoverContent>
-          </Popover>
-        </div>
-      </header>
+
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => fileRef.current?.click()}
+                aria-label="Importar tablero desde JSON"
+              >
+                Importar
+              </Button>
+
+              <input
+                ref={fileRef}
+                type="file"
+                accept=".json,application/json"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) handleImportFile(f);
+                }}
+              />
+
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button type="button" variant="outline" aria-label="Guía de teclado">
+                    Guía de teclado
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-96">
+                  <div className="space-y-2 text-sm">
+                    <p className="font-medium">Guía rápida de teclado</p>
+                    <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
+                      <li>
+                        Crear tarea: <span className="font-mono">Tab</span> hasta el botón{" "}
+                        <span className="font-mono">+</span> y pulsa{" "}
+                        <span className="font-mono">Enter</span>
+                      </li>
+                      <li>
+                        Editar tarea: <span className="font-mono">Tab</span> hasta{" "}
+                        <span className="font-mono">Editar</span> y pulsa{" "}
+                        <span className="font-mono">Enter</span>
+                      </li>
+                      <li>
+                        Borrar tarea: <span className="font-mono">Tab</span> hasta{" "}
+                        <span className="font-mono">Borrar</span> y pulsa{" "}
+                        <span className="font-mono">Enter</span>
+                      </li>
+                      <li>
+                        Mover tarea: enfoca el{" "}
+                        <span className="font-mono">handle ::</span>, pulsa{" "}
+                        <span className="font-mono">Espacio</span> para levantar,{" "}
+                        <span className="font-mono">↑/↓</span> para mover,{" "}
+                        <span className="font-mono">Espacio</span> para soltar
+                      </li>
+                      <li>
+                        Cerrar diálogos: <span className="font-mono">Esc</span>
+                      </li>
+                    </ul>
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </div>
+          </div>
+        </header>
 
       <Tabs value={tab} onValueChange={(v) => setTab(v as "board" | "audit")}>
         <TabsList>
@@ -275,6 +281,7 @@ export function AppShell() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      </div>
     </main>
   );
 }
