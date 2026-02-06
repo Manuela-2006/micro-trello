@@ -22,11 +22,21 @@ function parseDue(x: string): DueFilter | undefined {
 function parseEst(raw: string): { op: EstOp; value: number } | null {
   // soporta: est:<60 | est:>=120 | est:=30
   const m = raw.match(/^(<=|>=|<|>|=)\s*(\d+)$/);
-  if (!m) return null;
-  const op = m[1] as EstOp;
-  const value = Number(m[2]);
-  if (!Number.isFinite(value)) return null;
-  return { op, value };
+  if (m) {
+    const op = m[1] as EstOp;
+    const value = Number(m[2]);
+    if (!Number.isFinite(value)) return null;
+    return { op, value };
+  }
+
+  // soporta: est:30 (equivale a est:=30)
+  if (/^\d+$/.test(raw.trim())) {
+    const value = Number(raw.trim());
+    if (!Number.isFinite(value)) return null;
+    return { op: "=", value };
+  }
+
+  return null;
 }
 
 /**
