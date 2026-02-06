@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -37,3 +37,4 @@ export function DeleteTaskDialog({ open, onOpenChange, taskTitle, onConfirm }: P
     </AlertDialog>
   );
 }
+

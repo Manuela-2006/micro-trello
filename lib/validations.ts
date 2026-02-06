@@ -1,4 +1,4 @@
-import { z } from "zod";
+﻿import { z } from "zod";
 
 // ====== ESQUEMAS BASE ======
 const ColumnIdSchema = z.enum(["todo", "doing", "done"]);
@@ -10,7 +10,7 @@ const ISODateTimeSchema = z.string().datetime();
 // ====== ESQUEMA PARA TAREAS (MODELO COMPLETO) ======
 export const TaskSchema = z.object({
   id: UUIDSchema,
-  title: z.string().min(3, "El título debe tener al menos 3 caracteres"),
+  title: z.string().min(3, "El tÍtulo debe tener al menos 3 caracteres"),
   description: z.string().optional(),
   priority: PrioritySchema,
   tags: z.array(z.string()).default([]),
@@ -60,7 +60,7 @@ export type BoardStateInput = z.infer<typeof BoardStateSchema>;
 // ====== ESQUEMA PARA FORMULARIO DE TAREAS ======
 // Simplificado para evitar problemas con react-hook-form
 export const taskFormSchema = z.object({
-  title: z.string().min(3, "El título debe tener al menos 3 caracteres"),
+  title: z.string().min(3, "El tÍtulo debe tener al menos 3 caracteres"),
   description: z.string(),
   priority: z.enum(["low", "medium", "high"]),
   tagsText: z.string(),

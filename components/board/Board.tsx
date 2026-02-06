@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import type { BoardState, ColumnId, Task } from "@/types";
@@ -7,6 +7,7 @@ import { TaskDialog } from "@/components/board/TaskDialog";
 import { DeleteTaskDialog } from "@/components/board/DeleteTaskDialog";
 import { EvaluateTaskDialog } from "@/components/board/EvaluateTaskDialog";
 import { addAuditForTaskChange } from "@/lib/audit";
+import { Button } from "@/components/ui/button";
 
 import {
   DndContext,
@@ -239,6 +240,8 @@ export function Board({ state, setState, visibleColumns, dragDisabled }: Props) 
     setState(nextBase);
   }
 
+  const observationTasks = Object.values(state.tasks);
+
   return (
     <>
       <DndContext
@@ -246,7 +249,7 @@ export function Board({ state, setState, visibleColumns, dragDisabled }: Props) 
         collisionDetection={closestCorners}
         onDragEnd={handleDragEnd}
       >
-        <section className="grid grid-cols-3 gap-4">
+        <section className={`grid gap-4 ${state.godMode ? "grid-cols-4" : "grid-cols-3"}`}>
           {COLUMNS.map((col) => (
             <Column
               key={col.id}
@@ -263,13 +266,64 @@ export function Board({ state, setState, visibleColumns, dragDisabled }: Props) 
                 setDialogOpen(true);
               }}
               onDelete={(task) => setDeleteTask(task)}
-              godMode={state.godMode}
-              onEvaluate={(taskId) => {
-                const task = state.tasks[taskId];
-                if (task) setEvaluateTask(task);
-              }}
             />
           ))}
+
+          {state.godMode && (
+            <div className="rounded-xl border p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <h2 className="text-lg font-semibold">Observaciones de Javi</h2>
+                  <span className="text-sm text-muted-foreground">
+                    {observationTasks.length}
+                  </span>
+                </div>
+              </div>
+
+              <div className="mt-4 space-y-3">
+                {observationTasks.length === 0 ? (
+                  <div className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">
+                    No hay tareas para evaluar.
+                  </div>
+                ) : (
+                  observationTasks.map((task) => {
+                    const hasScore = typeof task.rubricScore === "number";
+                    const comment = task.rubricComment?.trim();
+                    return (
+                      <div key={task.id} className="rounded-lg border p-3 space-y-2">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="min-w-0">
+                            <p className="font-medium truncate">{task.title}</p>
+                            <p className="text-xs text-muted-foreground">
+                              Score: {hasScore ? `${task.rubricScore}/10` : "—"}
+                            </p>
+                          </div>
+                          <span className="text-xs rounded-full border px-2 py-0.5">
+                            {hasScore ? "Evaluada" : "Sin evaluar"}
+                          </span>
+                        </div>
+
+                        <div className="text-sm text-muted-foreground">
+                          {comment ? comment : "Sin observaciones"}
+                        </div>
+
+                        <div>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setEvaluateTask(task)}
+                          >
+                            {hasScore ? "Editar" : "Evaluar"}
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+          )}
         </section>
       </DndContext>
 
@@ -311,3 +365,4 @@ export function Board({ state, setState, visibleColumns, dragDisabled }: Props) 
     </>
   );
 }
+

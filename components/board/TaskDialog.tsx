@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
@@ -181,7 +181,7 @@ export function TaskDialog({
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Título</FormLabel>
+                  <FormLabel>TÍtulo</FormLabel>
                   <FormControl>
                     <Input 
                       {...field} 
@@ -277,7 +277,7 @@ export function TaskDialog({
               name="dueDate"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Fecha límite</FormLabel>
+                  <FormLabel>Fecha lÍmite</FormLabel>
                   <FormControl>
                     <Input type="date" {...field} />
                   </FormControl>

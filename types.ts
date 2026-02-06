@@ -1,4 +1,4 @@
-// ============================================
+﻿// ============================================
 // TIPOS BASE
 // ============================================
 
@@ -13,7 +13,7 @@ export type ColumnId = "todo" | "doing" | "done";
 export type Priority = "low" | "medium" | "high";
 
 /**
- * Tipo de acción de auditoría
+ * Tipo de acción de auditorÍa
  */
 export type AuditAction = "CREATE" | "UPDATE" | "DELETE" | "MOVE" | "IMPORT_FIX";
 
@@ -28,13 +28,13 @@ export type AuditAction = "CREATE" | "UPDATE" | "DELETE" | "MOVE" | "IMPORT_FIX"
 export type Task = {
   // Campos obligatorios
   id: string; // UUID generado con uuid v4
-  title: string; // Mínimo 3 caracteres
+  title: string; // MÍnimo 3 caracteres
   description?: string; // Opcional
   priority: Priority;
   tags: string[]; // Array de strings (ej: ["compliance", "urgent"])
   estimationMin: number; // Estimación en minutos
   createdAtISO: string; // Fecha de creación en formato ISO
-  dueAtISO?: string; // Fecha límite opcional en formato ISO
+  dueAtISO?: string; // Fecha lÍmite opcional en formato ISO
   status: ColumnId; // Columna actual de la tarea
 
   // Campos del Modo Dios (opcionales, persisten aunque modo esté off)
@@ -58,7 +58,7 @@ export type AuditDiff = {
 };
 
 /**
- * Evento de auditoría que registra toda operación sobre tareas
+ * Evento de auditorÍa que registra toda operación sobre tareas
  */
 export type AuditEvent = {
   id: string; // UUID del evento
@@ -81,7 +81,7 @@ export type BoardState = {
   version: 1; // Para futuras migraciones de esquema
   tasks: Record<string, Task>; // Tareas normalizadas por ID
   columns: Record<ColumnId, string[]>; // IDs ordenados por columna
-  audit: AuditEvent[]; // Historial completo de auditoría
+  audit: AuditEvent[]; // Historial completo de auditorÍa
   godMode: boolean; // Estado del switch Modo Dios
 };
 
@@ -90,7 +90,7 @@ export type BoardState = {
 // ============================================
 
 /**
- * Filtro de fecha límite
+ * Filtro de fecha lÍmite
  */
 export type DueFilter = "overdue" | "week" | "any";
 
@@ -105,8 +105,9 @@ export type EstOp = "<" | "<=" | ">" | ">=" | "=";
  */
 export type SearchQuery = {
   text: string; // Texto libre (busca en title y description)
-  tag?: string; // Filtro por tag específico
+  tag?: string; // Filtro por tag especÍfico
   priority?: Priority; // Filtro por prioridad
-  due?: DueFilter; // Filtro por fecha límite
+  due?: DueFilter; // Filtro por fecha lÍmite
   est?: { op: EstOp; value: number }; // Filtro por estimación con operador
 };
+

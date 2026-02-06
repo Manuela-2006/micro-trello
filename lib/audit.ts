@@ -1,4 +1,4 @@
-import { AuditAction, AuditDiff, AuditEvent, BoardState, Task } from "@/types";
+﻿import { AuditAction, AuditDiff, AuditEvent, BoardState, Task } from "@/types";
 import { v4 as uuidv4 } from "uuid";
 
 const USER_LABEL: AuditEvent["userLabel"] = "Alumno/a";
@@ -80,7 +80,7 @@ export function buildTaskDiff(before?: Task, after?: Task): AuditDiff {
 }
 
 /**
- * Crea un evento de auditoría.
+ * Crea un evento de auditorÍa.
  */
 export function createAuditEvent(params: {
   action: AuditAction;
@@ -125,3 +125,4 @@ export function addAuditForTaskChange(params: {
   });
   return appendAudit(params.state, event);
 }
+

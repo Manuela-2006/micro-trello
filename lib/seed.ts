@@ -1,4 +1,4 @@
-import { Task, BoardState, ColumnId } from "@/types";
+﻿import { Task, BoardState, ColumnId } from "@/types";
 import { v4 as uuidv4 } from "uuid";
 
 /**
@@ -20,7 +20,7 @@ export function createDefaultState(): BoardState {
       id: uuidv4(),
       title: "Revisar compliance Q1 2025",
       description:
-        "Auditoría trimestral de cumplimiento normativo MiFID II y reglamento de abuso de mercado",
+        "AuditorÍa trimestral de cumplimiento normativo MiFID II y reglamento de abuso de mercado",
       priority: "high",
       tags: ["compliance", "quarterly", "urgent"],
       estimationMin: 180,
@@ -32,7 +32,7 @@ export function createDefaultState(): BoardState {
       id: uuidv4(),
       title: "Preparar informe cliente VIP",
       description:
-        "Reporte mensual de rendimiento cartera Sr. Martínez - incluir análisis de riesgo ajustado",
+        "Reporte mensual de rendimiento cartera Sr. MartÍnez - incluir análisis de riesgo ajustado",
       priority: "high",
       tags: ["client-facing", "reports", "vip"],
       estimationMin: 120,
@@ -53,7 +53,7 @@ export function createDefaultState(): BoardState {
     {
       id: uuidv4(),
       title: "Solicitar documentación KYC nuevo cliente",
-      description: "Empresa Logística del Norte S.L. - pendiente de validación de identidad",
+      description: "Empresa LogÍstica del Norte S.L. - pendiente de validación de identidad",
       priority: "medium",
       tags: ["compliance", "client-onboarding"],
       estimationMin: 60,
@@ -88,7 +88,7 @@ export function createDefaultState(): BoardState {
     {
       id: uuidv4(),
       title: "Validar órdenes ejecutadas ayer",
-      description: "Confirmar que todas las ejecuciones del día anterior están correctamente registradas",
+      description: "Confirmar que todas las ejecuciones del dÍa anterior están correctamente registradas",
       priority: "low",
       tags: ["validation", "routine"],
       estimationMin: 30,
@@ -146,7 +146,8 @@ export function createDefaultState(): BoardState {
     version: 1,
     tasks: tasksById,
     columns,
-    audit: [], // Inicialmente sin eventos de auditoría
+    audit: [], // Inicialmente sin eventos de auditorÍa
     godMode: false, // Modo Dios desactivado por defecto
   };
 }
+

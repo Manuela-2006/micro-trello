@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import * as React from "react";
 import type { BoardState } from "@/types";
@@ -72,7 +72,7 @@ export function AppShell() {
 
   async function handleImportFile(file: File) {
     try {
-      const next = await importBoardStateFromFile(file);
+      const next = await importBoardStateFromFile(file, state);
       setState(next);
       setTab("board");
       setImportTitle("Importación correcta ✅");
@@ -131,7 +131,7 @@ export function AppShell() {
             <Switch
               checked={state.godMode}
               onCheckedChange={handleToggleGodMode}
-              aria-label="Activar modo Dios"
+              aria-label="Activar modo evaluación"
             />
             <span className="text-sm">Modo Dios</span>
           </div>
@@ -253,3 +253,4 @@ export function AppShell() {
     </main>
   );
 }
+

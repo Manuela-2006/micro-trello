@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import * as React from "react";
 import type { AuditAction, AuditEvent } from "@/types";
@@ -40,30 +40,64 @@ function actionBadgeVariant(action: AuditAction) {
   return "secondary"; // UPDATE
 }
 
-function compact(v: unknown) {
-  if (v === undefined) return "";
-  if (v === null) return "null";
-  if (Array.isArray(v)) return `[${v.join(", ")}]`;
-  if (typeof v === "object") return JSON.stringify(v);
-  return String(v);
+function formatDateLabel(iso?: string) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toLocaleString();
 }
 
-function diffPreview(e: AuditEvent) {
-  const keys = e.diff.changedKeys ?? [];
-  if (keys.length === 0) return "(sin diff)";
+function formatKeyLabel(key: string) {
+  const map: Record<string, string> = {
+    title: "Título",
+    description: "Descripción",
+    priority: "Prioridad",
+    tags: "Tags",
+    estimationMin: "Estimación (min)",
+    createdAtISO: "Fecha creación",
+    dueAtISO: "Fecha límite",
+    status: "Columna",
+    rubricScore: "Rúbrica",
+    rubricComment: "Comentario",
+    javiNotes: "Observaciones",
+    id: "ID",
+  };
+  return map[key] ?? key;
+}
 
-  // mostramos solo una vista humana de antes/después para keys
-  const before: Record<string, string> = {};
-  const after: Record<string, string> = {};
-
-  for (const k of keys) {
-    before[String(k)] = compact(e.diff.before?.[k]);
-    after[String(k)] = compact(e.diff.after?.[k]);
+function formatValue(key: string, value: unknown) {
+  if (value === undefined) return "—";
+  if (value === null) return "—";
+  if (Array.isArray(value)) return value.length ? value.join(", ") : "—";
+  if (key === "createdAtISO" || key === "dueAtISO") {
+    return formatDateLabel(String(value));
   }
+  if (key === "priority" || key === "status") {
+    return String(value).toUpperCase();
+  }
+  return String(value);
+}
 
-  return `keys=${keys.join(", ")} | before=${JSON.stringify(
-    before
-  )} | after=${JSON.stringify(after)}`;
+function renderDiff(e: AuditEvent) {
+  const keys = e.diff.changedKeys ?? [];
+  if (keys.length === 0) return <span>(sin diff)</span>;
+
+  return (
+    <ul className="space-y-1">
+      {keys.map((k) => {
+        const before = formatValue(String(k), e.diff.before?.[k]);
+        const after = formatValue(String(k), e.diff.after?.[k]);
+        return (
+          <li key={String(k)}>
+            <span className="font-medium">{formatKeyLabel(String(k))}:</span>{" "}
+            <span className="text-muted-foreground">{before}</span>{" "}
+            <span className="text-muted-foreground">→</span>{" "}
+            <span>{after}</span>
+          </li>
+        );
+      })}
+    </ul>
+  );
 }
 
 const ACTIONS: (AuditAction | "ALL")[] = [
@@ -86,6 +120,7 @@ export function AuditTable({ events }: Props) {
       return true;
     });
   }, [events, action, taskId]);
+
 
   return (
     <div className="space-y-4">
@@ -164,8 +199,8 @@ export function AuditTable({ events }: Props) {
                   <TableCell className="font-mono text-xs align-top">
                     {e.taskId}
                   </TableCell>
-                  <TableCell className="font-mono text-xs align-top">
-                    {diffPreview(e)}
+                  <TableCell className="text-xs align-top">
+                    {renderDiff(e)}
                   </TableCell>
                   <TableCell className="align-top">{e.userLabel}</TableCell>
                 </TableRow>
@@ -177,3 +212,6 @@ export function AuditTable({ events }: Props) {
     </div>
   );
 }
+
+
+

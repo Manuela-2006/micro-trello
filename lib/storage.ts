@@ -1,4 +1,4 @@
-import { BoardState } from "@/types";
+﻿import { BoardState } from "@/types";
 import { createDefaultState } from "@/lib/seed";
 
 /**
@@ -27,7 +27,7 @@ export function loadState(): BoardState {
 
     const parsed = JSON.parse(raw) as BoardState;
 
-    // Validación mínima de estructura
+    // Validación mÍnima de estructura
     if (
       parsed.version !== 1 ||
       typeof parsed.tasks !== "object" ||
@@ -72,3 +72,4 @@ export function clearStorage(): void {
 
   localStorage.removeItem(STORAGE_KEY);
 }
+

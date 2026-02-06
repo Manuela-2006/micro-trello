@@ -1,4 +1,4 @@
-// src/lib/transfer.ts
+﻿// src/lib/transfer.ts
 
 import type { BoardState, Task, AuditEvent } from "@/types";
 import { BoardStateSchema } from "@/lib/validations";
@@ -25,7 +25,10 @@ export function exportBoardState(state: BoardState) {
 
 // ========== IMPORT (parse + validate + fix) ==========
 
-export async function importBoardStateFromFile(file: File): Promise<BoardState> {
+export async function importBoardStateFromFile(
+  file: File,
+  current: BoardState
+): Promise<BoardState> {
   const text = await file.text();
 
   let raw: unknown;
@@ -40,7 +43,7 @@ export async function importBoardStateFromFile(file: File): Promise<BoardState> 
     // Mostrar TODOS los errores (no solo el primero)
     const issues = parsed.error.issues
       .map((i) => {
-        const where = i.path?.length ? i.path.join(".") : "raíz";
+        const where = i.path?.length ? i.path.join(".") : "raÍz";
         return `- ${where}: ${i.message}`;
       })
       .join("\n");
@@ -53,28 +56,26 @@ export async function importBoardStateFromFile(file: File): Promise<BoardState> 
   // Puede venir con IDs duplicados o columnas inconsistentes aunque pase schema
   const { state: fixed, fixes } = resolveIdConflictsAndClean(normalized);
 
-  // Registrar arreglos como UPDATE (acción permitida)
-  if (fixes.remappedTasks.length > 0) {
-    const fixEvents: AuditEvent[] = fixes.remappedTasks.map(({ from, to }) => ({
-      id: uuidv4(),
-      timestampISO: new Date().toISOString(),
-      action: "UPDATE",
-      taskId: to,
-      diff: {
-        before: { id: from } as Partial<Task>,
-        after: { id: to } as Partial<Task>,
-        changedKeys: ["id"],
-      },
-      userLabel: "Alumno/a",
-    }));
+  const merged = mergeWithCurrent(current, fixed);
 
-    return {
-      ...fixed,
-      audit: [...fixEvents, ...fixed.audit],
-    };
-  }
+  const remappedAll = [...fixes.remappedTasks, ...merged.fixes.remappedTasks];
+  const fixEvents: AuditEvent[] = remappedAll.map(({ from, to }) => ({
+    id: uuidv4(),
+    timestampISO: new Date().toISOString(),
+    action: "UPDATE",
+    taskId: to,
+    diff: {
+      before: { id: from } as Partial<Task>,
+      after: { id: to } as Partial<Task>,
+      changedKeys: ["id"],
+    },
+    userLabel: "Alumno/a",
+  }));
 
-  return fixed;
+  return {
+    ...merged.state,
+    audit: [...current.audit, ...fixEvents, ...merged.state.audit],
+  };
 }
 
 // ========== FIXES ==========
@@ -187,3 +188,86 @@ function resolveIdConflictsAndClean(input: BoardState): {
     fixes: { remappedTasks },
   };
 }
+
+function mergeWithCurrent(
+  current: BoardState,
+  incoming: BoardState
+): {
+  state: BoardState;
+  fixes: { remappedTasks: Array<{ from: string; to: string }> };
+} {
+  const usedTaskIds = new Set<string>(Object.keys(current.tasks));
+  const remapTaskId = new Map<string, string>();
+  const remappedTasks: Array<{ from: string; to: string }> = [];
+  const acceptedIncomingIds = new Set<string>();
+
+  const nextTasks: Record<string, Task> = { ...current.tasks };
+
+  for (const [id, task] of Object.entries(incoming.tasks)) {
+    // Si ya existe en el tablero, se ignora para evitar duplicados
+    if (usedTaskIds.has(id)) {
+      continue;
+    }
+
+    let finalId = id;
+    if (usedTaskIds.has(finalId)) {
+      let newId = uuidv4();
+      while (usedTaskIds.has(newId)) newId = uuidv4();
+      remapTaskId.set(finalId, newId);
+      remappedTasks.push({ from: finalId, to: newId });
+      finalId = newId;
+    }
+    usedTaskIds.add(finalId);
+    acceptedIncomingIds.add(finalId);
+    nextTasks[finalId] = { ...task, id: finalId };
+  }
+
+  const nextColumns: BoardState["columns"] = {
+    todo: [],
+    doing: [],
+    done: [],
+  };
+
+  (["todo", "doing", "done"] as const).forEach((col) => {
+    const merged = [
+      ...(current.columns[col] ?? []),
+      ...(incoming.columns[col] ?? []).map((id) => remapTaskId.get(id) ?? id),
+    ];
+    const seen = new Set<string>();
+    for (const id of merged) {
+      if (seen.has(id)) continue;
+      if (!nextTasks[id]) continue;
+      if (!current.tasks[id] && !acceptedIncomingIds.has(id)) continue;
+      seen.add(id);
+      nextColumns[col].push(id);
+    }
+  });
+
+  const usedEventIds = new Set<string>(current.audit.map((e) => e.id));
+  const nextAudit: AuditEvent[] = (incoming.audit ?? [])
+    .map((ev) => {
+      const newTaskId = remapTaskId.get(ev.taskId) ?? ev.taskId;
+      if (!acceptedIncomingIds.has(newTaskId)) return null;
+      let newEventId = ev.id;
+      if (!newEventId || usedEventIds.has(newEventId)) newEventId = uuidv4();
+      usedEventIds.add(newEventId);
+      return {
+        ...ev,
+        id: newEventId,
+        taskId: newTaskId,
+      };
+    })
+    .filter((e): e is AuditEvent => Boolean(e));
+
+  return {
+    state: {
+      version: 1,
+      tasks: nextTasks,
+      columns: nextColumns,
+      audit: nextAudit,
+      godMode: current.godMode,
+    },
+    fixes: { remappedTasks },
+  };
+}
+

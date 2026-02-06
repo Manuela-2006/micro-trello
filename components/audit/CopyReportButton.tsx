@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import * as React from "react";
 import type { AuditEvent } from "@/types";
@@ -96,3 +96,4 @@ export function CopyReportButton({ events }: Props) {
     </Button>
   );
 }
+

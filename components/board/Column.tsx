@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useDroppable } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
@@ -15,10 +15,6 @@ type Props = {
   onCreate: () => void;
   onEdit: (task: Task) => void;
   onDelete: (task: Task) => void;
-
-  // ✅ FASE 10
-  godMode: boolean;
-  onEvaluate?: (taskId: string) => void;
 };
 
 export function Column({
@@ -30,8 +26,6 @@ export function Column({
   onCreate,
   onEdit,
   onDelete,
-  godMode,
-  onEvaluate,
 }: Props) {
   const ids = visibleIds ?? state.columns[columnId];
   const { setNodeRef, isOver } = useDroppable({ id: columnId });
@@ -47,14 +41,22 @@ export function Column({
           <span className="text-sm text-muted-foreground">{tasks.length}</span>
         </div>
 
-        <Button
-          type="button"
-          variant="ghost"
-          onClick={onCreate}
-          aria-label={`Crear tarea en ${title}`}
-        >
-          +
-        </Button>
+        <div className="relative group">
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={onCreate}
+            aria-label="añadir tarea"
+          >
+            +
+          </Button>
+          <span
+            role="tooltip"
+            className="pointer-events-none absolute -top-8 right-0 rounded bg-foreground px-2 py-1 text-xs text-background opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100"
+          >
+            Añadir tarea
+          </span>
+        </div>
       </div>
 
       {dragDisabled && (
@@ -67,7 +69,7 @@ export function Column({
         <div ref={setNodeRef} className={`mt-4 space-y-3 ${isOver ? "bg-muted/30" : ""}`}>
           {tasks.length === 0 ? (
             <div className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">
-              No hay tareas que coincidan aquí.
+              No hay tareas que coincidan aquÍ.
             </div>
           ) : (
             tasks.map((task) => (
@@ -77,8 +79,6 @@ export function Column({
                 dragDisabled={dragDisabled}
                 onEdit={onEdit}
                 onDelete={onDelete}
-                godMode={godMode}
-                onEvaluate={onEvaluate}
               />
             ))
           )}
@@ -87,3 +87,5 @@ export function Column({
     </div>
   );
 }
+
+

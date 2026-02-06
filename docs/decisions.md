@@ -1,4 +1,4 @@
-# Decisiones de diseño del modelo de datos
+﻿# Decisiones de diseño del modelo de datos
 
 ## Estado normalizado
 
@@ -8,9 +8,9 @@
 - Facilita operaciones de mover tareas entre columnas (solo manipular arrays)
 - Evita duplicación de datos
 - Permite ordenamiento independiente por columna
-- Simplifica auditoría (solo cambia el status de la tarea)
+- Simplifica auditorÍa (solo cambia el status de la tarea)
 
-## Auditoría con diff parcial
+## AuditorÍa con diff parcial
 
 **Decisión:** `AuditDiff` solo guarda campos que cambiaron (`changedKeys`).
 
@@ -27,5 +27,5 @@
 **Razón:**
 - Persisten aunque el modo esté desactivado
 - No complica el modelo con estructuras separadas
-- Auditoría funciona igual (UPDATE registra cambios en estos campos)
+- AuditorÍa funciona igual (UPDATE registra cambios en estos campos)
 - Más simple de implementar y mantener

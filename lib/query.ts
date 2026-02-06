@@ -1,4 +1,4 @@
-import type { SearchQuery, Task, Priority, EstOp, DueFilter } from "@/types";
+﻿import type { SearchQuery, Task, Priority, EstOp, DueFilter } from "@/types";
 
 function normalize(s: string): string {
   return s
@@ -107,6 +107,12 @@ function textMatches(task: Task, queryText: string): boolean {
   const createdShort = createdISO.slice(0, 10);
   const noDue = dueISO ? "" : "sin fecha";
 
+  const noNotes =
+    (!task.javiNotes || task.javiNotes.trim() === "") &&
+    (!task.rubricComment || task.rubricComment.trim() === "")
+      ? "sin observaciones"
+      : "";
+
   const hay = normalize(
     [
       task.title,
@@ -122,6 +128,13 @@ function textMatches(task: Task, queryText: string): boolean {
       createdShort,
       createdDateStr,
       noDue,
+      task.javiNotes ?? "",
+      task.rubricComment ?? "",
+      task.rubricScore !== undefined ? String(task.rubricScore) : "",
+      task.rubricScore !== undefined ? `score ${task.rubricScore}` : "",
+      task.rubricScore !== undefined ? `rubrica ${task.rubricScore}` : "",
+      task.rubricScore !== undefined ? `${task.rubricScore}/10` : "",
+      noNotes,
     ].join(" ")
   );
   const words = qt.split(/\s+/).filter(Boolean);
@@ -218,3 +231,4 @@ export function buildFilteredState(
     columns: nextColumns,
   };
 }
+
