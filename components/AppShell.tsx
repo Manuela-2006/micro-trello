@@ -4,6 +4,7 @@ import * as React from "react";
 import type { BoardState } from "@/types";
 import { loadState, saveState } from "@/lib/storage";
 import { parseQuery, buildFilteredState } from "@/lib/query";
+import { appendAudit, createAuditEvent } from "@/lib/audit";
 import { Board } from "@/components/board/Board";
 import { AuditTable } from "@/components/audit/AuditTable";
 import { GodModePanel } from "@/components/god/GodModePanel";
@@ -22,6 +23,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { exportBoardState, importBoardStateFromFile } from "@/lib/transfer";
+import { v4 as uuidv4 } from "uuid";
 
 const STORAGE_DEBOUNCE_MS = 250;
 
@@ -73,7 +75,12 @@ export function AppShell() {
   async function handleImportFile(file: File) {
     try {
       const next = await importBoardStateFromFile(file, state);
-      setState(next);
+      const event = createAuditEvent({
+        action: "IMPORT",
+        taskId: uuidv4(),
+        diff: {},
+      });
+      setState(appendAudit(next, event));
       setTab("board");
       setImportTitle("Importación correcta ✅");
       setImportMessage("El tablero se ha importado y validado correctamente.");
@@ -139,7 +146,21 @@ export function AppShell() {
           <Button
             type="button"
             variant="outline"
-            onClick={() => exportBoardState(state)}
+            onClick={() => {
+              exportBoardState(state);
+              setState((prev) =>
+                prev
+                  ? appendAudit(
+                      prev,
+                      createAuditEvent({
+                        action: "EXPORT",
+                        taskId: uuidv4(),
+                        diff: {},
+                      })
+                    )
+                  : prev
+              );
+            }}
             aria-label="Exportar tablero a JSON"
           >
             Exportar

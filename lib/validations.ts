@@ -3,7 +3,15 @@
 // ====== ESQUEMAS BASE ======
 const ColumnIdSchema = z.enum(["todo", "doing", "done"]);
 const PrioritySchema = z.enum(["low", "medium", "high"]);
-const AuditActionSchema = z.enum(["CREATE", "UPDATE", "DELETE", "MOVE"]);
+const AuditActionSchema = z.enum([
+  "CREATE",
+  "UPDATE",
+  "DELETE",
+  "MOVE",
+  "IMPORT_FIX",
+  "IMPORT",
+  "EXPORT",
+]);
 const UUIDSchema = z.string().uuid();
 const ISODateTimeSchema = z.string().datetime();
 

@@ -20,7 +20,7 @@ export function GodModePanel({ state }: Props) {
   return (
     <Card className="bg-muted/30">
       <CardHeader>
-        <CardTitle className="text-lg">ðŸ“Š Panel Resumen - Modo Dios</CardTitle>
+        <CardTitle className="text-lg">Panel Resumen - Modo Dios</CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="grid grid-cols-3 gap-4 text-center">

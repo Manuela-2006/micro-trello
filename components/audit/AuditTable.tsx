@@ -37,6 +37,7 @@ function actionBadgeVariant(action: AuditAction) {
   if (action === "DELETE") return "destructive";
   if (action === "MOVE") return "secondary";
   if (action === "IMPORT_FIX") return "outline";
+  if (action === "IMPORT" || action === "EXPORT") return "outline";
   return "secondary"; // UPDATE
 }
 
@@ -107,6 +108,8 @@ const ACTIONS: (AuditAction | "ALL")[] = [
   "DELETE",
   "MOVE",
   "IMPORT_FIX",
+  "IMPORT",
+  "EXPORT",
 ];
 
 export function AuditTable({ events }: Props) {

@@ -15,7 +15,14 @@ export type Priority = "low" | "medium" | "high";
 /**
  * Tipo de acción de auditorÍa
  */
-export type AuditAction = "CREATE" | "UPDATE" | "DELETE" | "MOVE" | "IMPORT_FIX";
+export type AuditAction =
+  | "CREATE"
+  | "UPDATE"
+  | "DELETE"
+  | "MOVE"
+  | "IMPORT_FIX"
+  | "IMPORT"
+  | "EXPORT";
 
 // ============================================
 // TASK (modelo principal)
