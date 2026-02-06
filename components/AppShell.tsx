@@ -167,36 +167,40 @@ export function AppShell() {
 
           <Popover>
             <PopoverTrigger asChild>
-              <Button type="button" variant="outline" aria-label="Ver ejemplos de búsqueda">
-                Ejemplos
+              <Button type="button" variant="outline" aria-label="Guía de teclado">
+                Guía de teclado
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-96">
               <div className="space-y-2 text-sm">
-                <p className="font-medium">Búsqueda avanzada</p>
+                <p className="font-medium">Guía rápida de teclado</p>
                 <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
                   <li>
-                    Texto libre: <span className="font-mono">cliente vip</span>
+                    Crear tarea: <span className="font-mono">Tab</span> hasta el botón{" "}
+                    <span className="font-mono">+</span> y pulsa{" "}
+                    <span className="font-mono">Enter</span>
                   </li>
                   <li>
-                    Tag exacto: <span className="font-mono">tag:compliance</span>
+                    Editar tarea: <span className="font-mono">Tab</span> hasta{" "}
+                    <span className="font-mono">Editar</span> y pulsa{" "}
+                    <span className="font-mono">Enter</span>
                   </li>
                   <li>
-                    Prioridad: <span className="font-mono">p:high</span>
+                    Borrar tarea: <span className="font-mono">Tab</span> hasta{" "}
+                    <span className="font-mono">Borrar</span> y pulsa{" "}
+                    <span className="font-mono">Enter</span>
                   </li>
                   <li>
-                    Vencimiento: <span className="font-mono">due:overdue</span> /{" "}
-                    <span className="font-mono">due:week</span>
+                    Mover tarea: enfoca el{" "}
+                    <span className="font-mono">handle ::</span>, pulsa{" "}
+                    <span className="font-mono">Espacio</span> para levantar,{" "}
+                    <span className="font-mono">↑/↓</span> para mover,{" "}
+                    <span className="font-mono">Espacio</span> para soltar
                   </li>
                   <li>
-                    Estimación: <span className="font-mono">est:&lt;60</span> -{" "}
-                    <span className="font-mono">est:&gt;=120</span>
+                    Cerrar diálogos: <span className="font-mono">Esc</span>
                   </li>
                 </ul>
-                <p className="text-muted-foreground">
-                  Puedes combinar:{" "}
-                  <span className="font-mono">tag:reports p:medium est:&gt;=60</span>
-                </p>
               </div>
             </PopoverContent>
           </Popover>
