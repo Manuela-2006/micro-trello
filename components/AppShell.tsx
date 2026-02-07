@@ -39,6 +39,7 @@ export function AppShell() {
   const [state, setState] = React.useState<BoardState | null>(null);
   const [tab, setTab] = React.useState<"board" | "audit">("board");
   const [searchText, setSearchText] = React.useState("");
+  const [isDark, setIsDark] = React.useState(false);
   const fileRef = React.useRef<HTMLInputElement | null>(null);
 
   const [importOpen, setImportOpen] = React.useState(false);
@@ -49,6 +50,17 @@ export function AppShell() {
   React.useEffect(() => {
     const s = loadState();
     setState(s);
+  }, []);
+
+  React.useEffect(() => {
+    if (typeof window === "undefined") return;
+    const stored = window.localStorage.getItem("micro-trello-theme");
+    const prefersDark =
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const nextIsDark = stored ? stored === "dark" : prefersDark;
+    setIsDark(nextIsDark);
+    document.documentElement.classList.toggle("dark", nextIsDark);
   }, []);
 
   const debouncedSave = React.useMemo(
@@ -101,6 +113,14 @@ export function AppShell() {
     setState((prev) => (prev ? { ...prev, godMode: checked } : prev));
   }
 
+  function handleToggleTheme(checked: boolean) {
+    setIsDark(checked);
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("micro-trello-theme", checked ? "dark" : "light");
+      document.documentElement.classList.toggle("dark", checked);
+    }
+  }
+
   if (!state) {
     return (
       <main className="p-8">
@@ -127,13 +147,23 @@ export function AppShell() {
                 Tareas: {total} - Todo: {todo} - Doing: {doing} - Done: {done}
               </p>
             </div>
-            <div className="flex items-center gap-2 rounded-full border bg-background/80 px-3 py-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="flex items-center gap-2 rounded-full border bg-background/80 px-3 py-2">
+                <Switch
+                  checked={isDark}
+                  onCheckedChange={handleToggleTheme}
+                  aria-label="Cambiar tema oscuro"
+                />
+                <span className="text-sm">{isDark ? "Oscuro" : "Claro"}</span>
+              </div>
+              <div className="flex items-center gap-2 rounded-full border bg-background/80 px-3 py-2">
               <Switch
                 checked={state.godMode}
                 onCheckedChange={handleToggleGodMode}
                 aria-label="Activar modo evaluación"
               />
               <span className="text-sm">Modo Dios</span>
+            </div>
             </div>
           </div>
 
