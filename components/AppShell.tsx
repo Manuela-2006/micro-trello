@@ -86,6 +86,13 @@ export function AppShell() {
 
   async function handleImportFile(file: File) {
     try {
+      if (!state) {
+        setImportTitle("No se pudo importar ❌");
+        setImportMessage("El estado del tablero aún no está listo.");
+        setImportDetails(null);
+        setImportOpen(true);
+        return;
+      }
       const next = await importBoardStateFromFile(file, state);
       const event = createAuditEvent({
         action: "IMPORT",
@@ -266,7 +273,7 @@ export function AppShell() {
 
       <Tabs value={tab} onValueChange={(v) => setTab(v as "board" | "audit")}>
         <TabsList>
-          <TabsTrigger value="board">Kanban</TabsTrigger>
+          <TabsTrigger value="board">Tablero</TabsTrigger>
           <TabsTrigger value="audit">Auditoría</TabsTrigger>
         </TabsList>
 
