@@ -34,14 +34,14 @@ export function Column({
     .filter((task): task is Task => Boolean(task));
 
   return (
-    <div className="rounded-xl border p-4">
-      <div className="flex items-center justify-between">
+    <div className="p-4">
+      <div className="relative flex items-center justify-between">
         <div className="flex items-center gap-3">
           <h2 className="text-lg font-semibold">{title}</h2>
           <span className="text-sm text-muted-foreground">{tasks.length}</span>
         </div>
 
-        <div className="relative group">
+        <div className="group">
           <Button
             type="button"
             variant="ghost"
@@ -66,9 +66,12 @@ export function Column({
       )}
 
       <SortableContext items={ids} strategy={verticalListSortingStrategy}>
-        <div ref={setNodeRef} className={`mt-4 space-y-3 ${isOver ? "bg-muted/30" : ""}`}>
+        <div
+          ref={setNodeRef}
+          className={`mt-4 space-y-3 ${isOver ? "bg-muted/30" : ""}`}
+        >
           {tasks.length === 0 ? (
-            <div className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">
+            <div className="border border-dashed p-6 text-center text-sm text-muted-foreground">
               No hay tareas que coincidan aquÍ.
             </div>
           ) : (

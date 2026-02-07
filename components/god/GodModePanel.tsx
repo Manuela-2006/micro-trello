@@ -18,7 +18,7 @@ export function GodModePanel({ state }: Props) {
     : 0;
 
   return (
-    <Card className="bg-muted/30">
+    <Card className="rounded-md bg-muted/30">
       <CardHeader>
         <CardTitle className="text-lg">Panel Resumen - Modo Dios</CardTitle>
       </CardHeader>
@@ -39,7 +39,7 @@ export function GodModePanel({ state }: Props) {
         </div>
 
         {evaluated.length > 0 && (
-          <div className="mt-4 rounded-lg border bg-background p-4 text-center">
+          <div className="mt-4 border-t pt-4 text-center">
             <p className="text-3xl font-bold text-primary">
               {avgScore.toFixed(1)}/10
             </p>

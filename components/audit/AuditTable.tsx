@@ -115,13 +115,25 @@ export function AuditTable({ events }: Props) {
   const [action, setAction] = React.useState<AuditAction | "ALL">("ALL");
   const [taskId, setTaskId] = React.useState("");
 
+  const eventsWithKeys = React.useMemo(() => {
+    return events.map((e, idx) => ({
+      event: e,
+      rowKey: `${e.id ?? "noid"}-${e.timestampISO}-${idx}`,
+    }));
+  }, [events]);
+
   const filtered = React.useMemo(() => {
-    return events.filter((e) => {
-      if (action !== "ALL" && e.action !== action) return false;
-      if (taskId.trim() && !e.taskId.includes(taskId.trim())) return false;
+    return eventsWithKeys.filter(({ event }) => {
+      if (action !== "ALL" && event.action !== action) return false;
+      if (taskId.trim() && !event.taskId.includes(taskId.trim())) return false;
       return true;
     });
-  }, [events, action, taskId]);
+  }, [eventsWithKeys, action, taskId]);
+
+  const filteredEvents = React.useMemo(
+    () => filtered.map(({ event }) => event),
+    [filtered]
+  );
 
   return (
     <div className="space-y-4">
@@ -161,11 +173,11 @@ export function AuditTable({ events }: Props) {
           <div className="text-sm text-muted-foreground">
             Mostrando <strong>{filtered.length}</strong> / {events.length}
           </div>
-          <CopyReportButton events={filtered} />
+          <CopyReportButton events={filteredEvents} />
         </div>
       </div>
 
-      <div className="rounded-xl border">
+      <div className="border-t">
         <Table>
           <TableHeader>
             <TableRow>
@@ -187,27 +199,24 @@ export function AuditTable({ events }: Props) {
                 </TableCell>
               </TableRow>
             ) : (
-              filtered.map((e, idx) => {
-                const rowKey = e.id
-                  ? `${e.id}-${e.timestampISO}-${idx}`
-                  : `${e.timestampISO}-${e.taskId}-${idx}`;
+              filtered.map(({ event, rowKey }) => {
                 return (
                   <TableRow key={rowKey}>
                     <TableCell className="align-top">
-                      {formatTs(e.timestampISO)}
+                      {formatTs(event.timestampISO)}
                     </TableCell>
                     <TableCell className="align-top">
-                      <Badge variant={actionBadgeVariant(e.action)}>
-                        {e.action}
+                      <Badge variant={actionBadgeVariant(event.action)}>
+                        {event.action}
                       </Badge>
                     </TableCell>
                     <TableCell className="font-mono text-xs align-top">
-                      {e.taskId}
+                      {event.taskId}
                     </TableCell>
                     <TableCell className="text-xs align-top">
-                      {renderDiff(e)}
+                      {renderDiff(event)}
                     </TableCell>
-                    <TableCell className="align-top">{e.userLabel}</TableCell>
+                    <TableCell className="align-top">{event.userLabel}</TableCell>
                   </TableRow>
                 );
               })

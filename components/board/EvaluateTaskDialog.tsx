@@ -100,7 +100,7 @@ export function EvaluateTaskDialog({ open, onOpenChange, task, onSubmit }: Props
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="notes">Observaciones de Javi</Label>
+            <Label htmlFor="notes">Observaciones</Label>
             <Textarea
               id="notes"
               value={notes}

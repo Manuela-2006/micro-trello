@@ -270,19 +270,19 @@ export function Board({ state, setState, visibleColumns, dragDisabled }: Props) 
           ))}
 
           {state.godMode && (
-            <div className="rounded-xl border p-4">
+            <div className="p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <h2 className="text-lg font-semibold">Observaciones de Javi</h2>
+                  <h2 className="text-lg font-semibold">Observaciones</h2>
                   <span className="text-sm text-muted-foreground">
                     {observationTasks.length}
                   </span>
                 </div>
               </div>
 
-              <div className="mt-4 space-y-3">
+              <div className="mt-4 divide-y divide-border/60">
                 {observationTasks.length === 0 ? (
-                  <div className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">
+                  <div className="border border-dashed p-6 text-center text-sm text-muted-foreground">
                     No hay tareas para evaluar.
                   </div>
                 ) : (
@@ -290,7 +290,7 @@ export function Board({ state, setState, visibleColumns, dragDisabled }: Props) 
                     const hasScore = typeof task.rubricScore === "number";
                     const comment = task.rubricComment?.trim();
                     return (
-                      <div key={task.id} className="rounded-lg border p-3 space-y-2">
+                      <div key={task.id} className="py-3 space-y-2">
                         <div className="flex items-start justify-between gap-2">
                           <div className="min-w-0">
                             <p className="font-medium truncate">{task.title}</p>
@@ -298,7 +298,7 @@ export function Board({ state, setState, visibleColumns, dragDisabled }: Props) 
                               Score: {hasScore ? `${task.rubricScore}/10` : "—"}
                             </p>
                           </div>
-                          <span className="text-xs rounded-full border px-2 py-0.5">
+                          <span className="text-xs border rounded-md px-2 py-0.5">
                             {hasScore ? "Evaluada" : "Sin evaluar"}
                           </span>
                         </div>
@@ -312,6 +312,7 @@ export function Board({ state, setState, visibleColumns, dragDisabled }: Props) 
                             type="button"
                             variant="outline"
                             size="sm"
+                            className="rounded-md"
                             onClick={() => setEvaluateTask(task)}
                           >
                             {hasScore ? "Editar" : "Evaluar"}

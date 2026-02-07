@@ -139,7 +139,7 @@ export function AppShell() {
   return (
     <main className="min-h-screen">
       <div className="mx-auto max-w-6xl p-8 space-y-6">
-        <header className="space-y-4 rounded-2xl border bg-card/80 p-5 shadow-sm backdrop-blur">
+        <header className="space-y-4 border-b pb-5">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <h1 className="text-3xl font-semibold tracking-tight">Micro Trello Kanban</h1>
@@ -148,7 +148,7 @@ export function AppShell() {
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              <div className="flex items-center gap-2 rounded-full border bg-background/80 px-3 py-2">
+              <div className="flex items-center gap-2 rounded-md border px-3 py-2">
                 <Switch
                   checked={isDark}
                   onCheckedChange={handleToggleTheme}
@@ -156,7 +156,7 @@ export function AppShell() {
                 />
                 <span className="text-sm">{isDark ? "Oscuro" : "Claro"}</span>
               </div>
-              <div className="flex items-center gap-2 rounded-full border bg-background/80 px-3 py-2">
+              <div className="flex items-center gap-2 rounded-md border px-3 py-2">
               <Switch
                 checked={state.godMode}
                 onCheckedChange={handleToggleGodMode}
@@ -299,7 +299,7 @@ export function AppShell() {
               <div>
                 <p>{importMessage}</p>
                 {importDetails && (
-                  <pre className="mt-3 max-h-64 overflow-auto rounded bg-muted p-3 text-xs whitespace-pre-wrap">
+                  <pre className="mt-3 max-h-64 overflow-auto bg-muted p-3 text-xs whitespace-pre-wrap">
                     {importDetails}
                   </pre>
                 )}

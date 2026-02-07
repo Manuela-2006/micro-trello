@@ -23,6 +23,12 @@ function priorityLabel(p: Task["priority"]) {
   return "Low";
 }
 
+function priorityBadgeClass(p: Task["priority"]) {
+  if (p === "high") return "bg-teal-700 text-white";
+  if (p === "medium") return "bg-[#80CBC4] text-teal-950";
+  return "bg-[#E0F2F1] text-teal-950";
+}
+
 function formatDate(iso?: string) {
   if (!iso) return null;
   const d = new Date(iso);
@@ -49,7 +55,7 @@ export function TaskCard({
 
   return (
     <div ref={setNodeRef} style={style} {...attributes}>
-      <Card className="hover:bg-muted/40 transition-colors">
+      <Card className="rounded-md hover:bg-muted/40 transition-colors">
         <CardContent className="p-4 space-y-2">
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0 flex items-start gap-2">
@@ -82,7 +88,9 @@ export function TaskCard({
               </div>
             </div>
 
-            <Badge variant="secondary">{priorityLabel(task.priority)}</Badge>
+            <Badge className={priorityBadgeClass(task.priority)}>
+              {priorityLabel(task.priority)}
+            </Badge>
           </div>
 
           <div className="flex flex-wrap gap-2">
@@ -99,7 +107,7 @@ export function TaskCard({
           </div>
 
           {/* ✅ BLOQUE MODO DIOS */}
-<div className="flex gap-2 pt-2">
+          <div className="flex gap-2 pt-2">
             <Button
               type="button"
               variant="outline"
