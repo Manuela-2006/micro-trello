@@ -123,7 +123,6 @@ export function AuditTable({ events }: Props) {
     });
   }, [events, action, taskId]);
 
-
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
@@ -188,25 +187,30 @@ export function AuditTable({ events }: Props) {
                 </TableCell>
               </TableRow>
             ) : (
-              filtered.map((e) => (
-                <TableRow key={e.id}>
-                  <TableCell className="align-top">
-                    {formatTs(e.timestampISO)}
-                  </TableCell>
-                  <TableCell className="align-top">
-                    <Badge variant={actionBadgeVariant(e.action)}>
-                      {e.action}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="font-mono text-xs align-top">
-                    {e.taskId}
-                  </TableCell>
-                  <TableCell className="text-xs align-top">
-                    {renderDiff(e)}
-                  </TableCell>
-                  <TableCell className="align-top">{e.userLabel}</TableCell>
-                </TableRow>
-              ))
+              filtered.map((e, idx) => {
+                const rowKey = e.id
+                  ? `${e.id}-${e.timestampISO}-${idx}`
+                  : `${e.timestampISO}-${e.taskId}-${idx}`;
+                return (
+                  <TableRow key={rowKey}>
+                    <TableCell className="align-top">
+                      {formatTs(e.timestampISO)}
+                    </TableCell>
+                    <TableCell className="align-top">
+                      <Badge variant={actionBadgeVariant(e.action)}>
+                        {e.action}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="font-mono text-xs align-top">
+                      {e.taskId}
+                    </TableCell>
+                    <TableCell className="text-xs align-top">
+                      {renderDiff(e)}
+                    </TableCell>
+                    <TableCell className="align-top">{e.userLabel}</TableCell>
+                  </TableRow>
+                );
+              })
             )}
           </TableBody>
         </Table>
