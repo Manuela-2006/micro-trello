@@ -86,14 +86,15 @@ export function AppShell() {
 
   async function handleImportFile(file: File) {
     try {
-      if (!state) {
+      const current = state;
+      if (!current) {
         setImportTitle("No se pudo importar ❌");
         setImportMessage("El estado del tablero aún no está listo.");
         setImportDetails(null);
         setImportOpen(true);
         return;
       }
-      const next = await importBoardStateFromFile(file, state);
+      const next = await importBoardStateFromFile(file, current);
       const event = createAuditEvent({
         action: "IMPORT",
         taskId: uuidv4(),
