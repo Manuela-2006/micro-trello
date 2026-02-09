@@ -1,6 +1,29 @@
-# Micro Trello Kanban
+﻿# Micro Trello Kanban
 
 Tablero kanban con auditoría de cambios, búsqueda avanzada y modo evaluación. Basado en Next.js (App Router) y persistencia local.
+
+**Objetivo**
+
+Construir un micro Trello para gestionar tareas con drag & drop, búsqueda avanzada y auditoría de cambios, con persistencia local y soporte de evaluación.
+
+**Cómo usar**
+
+1. Crea una tarea con el botón `+` o `Nueva tarea`, completa título y campos opcionales, y guarda.
+2. Arrastra tareas entre columnas para cambiar su estado. Reordena dentro de la columna con drag & drop.
+3. Usa la barra de búsqueda con texto libre o filtros como `tag:`, `p:` (prioridad), `due:` (fecha) y `est:` (estimación).
+4. Abre una tarea para ver su historial y el `diff` de cambios en la auditoría.
+5. Exporta o importa el tablero desde el menú de opciones para guardar o recuperar el estado.
+6. Activa el modo evaluación para rellenar la rúbrica y añadir notas.
+
+**Capturas (3)**
+
+![Captura 1](docs/captura-1.png)
+![Captura 2](docs/captura-2.png)
+![Captura 3](docs/captura-3.png)
+
+**Enlace a Vercel**
+
+`PENDIENTE: pegad aquí vuestro enlace a Vercel`
 
 **Checklist de requisitos**
 
