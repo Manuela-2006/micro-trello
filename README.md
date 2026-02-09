@@ -1,36 +1,21 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Micro Trello Kanban
 
-## Getting Started
+Tablero kanban con auditoría de cambios, búsqueda avanzada y modo evaluación. Basado en Next.js (App Router) y persistencia local.
 
-First, run the development server:
+**Checklist de requisitos**
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- `CRUD` de tareas (crear, editar, eliminar) con validación de formulario
+- `Drag & drop` entre columnas y reordenado dentro de la misma columna
+- Búsqueda con `query language` (texto libre + filtros por tag/prioridad/fecha/estimación)
+- Auditoría de cambios con `diff` parcial por tarea
+- Persistencia en `localStorage` y export/import de estado
+- Modo evaluación con campos de rúbrica y notas
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**Decisiones técnicas (5-10 líneas)**
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Estructura `tasks` + `columns` en `BoardState` para O(1) por ID y arrays ordenados por columna, evitando duplicar datos en UI (ver `src/types.ts` y `docs/decisions.md`).
+- La query se parsea en `lib/query.ts` con un parser simple de tokens (`tag:`, `p:`, `due:`, `est:`) que arma un `SearchQuery` tipado y luego filtra por predicados.
+- El filtrado mantiene el estado original y solo reemplaza `columns` con IDs visibles (`buildFilteredState`), lo que evita mutar `tasks` o `audit`.
+- El diff se guarda como `AuditDiff` parcial (`before/after/changedKeys`) en `lib/audit.ts` para reducir ruido en el log.
+- La persistencia usa `localStorage` con clave versionada (`micro-trello-board-v1`) y validación básica al cargar (`lib/storage.ts`).
+- La importación valida con Zod y normaliza inconsistencias (IDs duplicados, tareas huérfanas, status inválido) en `lib/transfer.ts`.
