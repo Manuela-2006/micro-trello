@@ -13,17 +13,17 @@ Construir un micro Trello para gestionar tareas con drag & drop, búsqueda avanz
 3. Usa la barra de búsqueda con texto libre o filtros como `tag:`, `p:` (prioridad), `due:` (fecha) y `est:` (estimación).
 4. Abre una tarea para ver su historial y el `diff` de cambios en la auditoría.
 5. Exporta o importa el tablero desde el menú de opciones para guardar o recuperar el estado.
-6. Activa el modo evaluación para rellenar la rúbrica y añadir notas.
+6. Activa el modo dios para evaluarc las tareas y añadir comentarios y observaciones.
 
 **Capturas (3)**
+<img width="1894" height="951" alt="image" src="https://github.com/user-attachments/assets/228ab6e0-81f1-4a2a-aae7-5cb6b4820bbc" />
+<img width="809" height="894" alt="image" src="https://github.com/user-attachments/assets/c5059fce-6762-4266-9e24-b5ee657c3c70" />
+<img width="1892" height="784" alt="image" src="https://github.com/user-attachments/assets/ee5fe4d2-7d92-4ef6-a1b0-09b2b62e3270" />
 
-![Captura 1](docs/captura-1.png)
-![Captura 2](docs/captura-2.png)
-![Captura 3](docs/captura-3.png)
+
 
 **Enlace a Vercel**
-
-`PENDIENTE: pegad aquí vuestro enlace a Vercel`
+(https://micro-trello-nu.vercel.app/)
 
 **Checklist de requisitos**
 
